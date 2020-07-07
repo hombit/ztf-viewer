@@ -14,7 +14,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
+from anomalies import get_layout as get_anomalies_layout
 from app import app
+from login import get_layout as get_login_layout
 from search import get_layout as get_search_layout
 from util import default_dr
 from viewer import get_layout as get_viewer_layout
@@ -169,6 +171,8 @@ def go_to_url(n_clicks_oid, n_submit_oid, n_clicks_search,
     [Input('url', 'pathname')],
 )
 def app_select_by_url(pathname):
+    if re.search(r'^/+login/*', pathname):
+        return get_login_layout(pathname)
     if re.search(r'^/+(?:dr\d/+)?$', pathname):
         return [
             html.Div(
@@ -218,6 +222,8 @@ def app_select_by_url(pathname):
             )
         dr = search_match.group('dr')
         return get_search_layout(coordinates, radius_arcsec, dr)
+    if re.search('^/+anomalies/*$', pathname):
+        return get_anomalies_layout(pathname)
     return html.H1('404')
 
 
