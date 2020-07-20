@@ -19,7 +19,7 @@ from app import app
 from cross import get_catalog_query, find_vizier, find_ztf_oid, find_ztf_circle, vizier_catalog_details, light_curve_features
 from data import get_plot_data
 from products import DateWithFrac, correct_date
-from secret import is_user_token_valid
+from config import is_user_token_valid
 from util import html_from_astropy_table, to_str, INF, min_max_mjd_short, FILTER_COLORS, NotFound, CatalogUnavailable
 
 LIGHT_CURVE_TABLE_COLUMNS = ('mjd', 'mag', 'magerr', 'clrcoeff')
