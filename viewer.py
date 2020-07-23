@@ -16,10 +16,10 @@ from dash_table import DataTable
 
 from akb import akb
 from app import app
+from config import is_user_token_valid
 from cross import get_catalog_query, find_vizier, find_ztf_oid, find_ztf_circle, vizier_catalog_details, light_curve_features
 from data import get_plot_data
 from products import DateWithFrac, correct_date
-from config import is_user_token_valid
 from util import html_from_astropy_table, to_str, INF, min_max_mjd_short, FILTER_COLORS, NotFound, CatalogUnavailable
 
 LIGHT_CURVE_TABLE_COLUMNS = ('mjd', 'mag', 'magerr', 'clrcoeff')
@@ -362,7 +362,7 @@ def set_title(oid):
 def set_akb_info(oid):
     if not is_user_token_valid(flask.request.cookies.get('login_token')):
         return None
-    available_tags = akb.get_tags()
+    available_tags = akb.get_tag_names()
     try:
         akb_item = akb.get_by_oid(oid)
         tags_enabled = akb_item['tags']

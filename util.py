@@ -15,7 +15,7 @@ INF = float('inf')
 FILTER_COLORS = {'zr': '#CC3344', 'zg': '#117733', 'zi': '#1c1309'}
 
 
-default_dr = 'dr3'
+DEFAULT_DR = 'dr3'
 
 
 def db_coord_to_degrees(coord):

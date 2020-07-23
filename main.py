@@ -19,7 +19,8 @@ from anomalies import get_layout as get_anomalies_layout
 from app import app
 from login import get_layout as get_login_layout
 from search import get_layout as get_search_layout
-from util import default_dr
+from tags import get_layout as get_tags_layout
+from util import DEFAULT_DR
 from viewer import get_layout as get_viewer_layout
 
 
@@ -51,7 +52,7 @@ app.layout = html.Div([
                 n_submit=0,
             ),
             html.Div(
-                default_dr,
+                DEFAULT_DR,
                 id='data-release',
                 style={'display': 'none'},
             ),
@@ -98,12 +99,15 @@ app.layout = html.Div([
     [Input('url', 'pathname')],
 )
 def dr_from_url(url):
-    parts = pathlib.Path(url).parts
+    try:
+        parts = pathlib.Path(url).parts
+    except TypeError:
+        return DEFAULT_DR
     if len(parts) < 2:
-        return default_dr
+        return DEFAULT_DR
     if parts[1].lower().startswith('dr'):
         return parts[1]
-    return default_dr
+    return DEFAULT_DR
 
 
 def dr_switch(current_dr, current_url, switch_dr):
@@ -179,7 +183,7 @@ def app_select_by_url(pathname):
             html.Div(
                 [
                     'Example: ',
-                    html.A(f'HZ Her, zg passband, {default_dr.upper()}', href=f'/{default_dr}/view/680113300005170'),
+                    html.A(f'HZ Her, zg passband, {DEFAULT_DR.upper()}', href=f'/{DEFAULT_DR}/view/680113300005170'),
                 ]
             ),
             html.Footer(
@@ -190,7 +194,7 @@ def app_select_by_url(pathname):
             )
         ]
     if match := re.search(r'^/+view/+(\d+)', pathname):
-        return get_viewer_layout(f'/{default_dr}/view/{match.group(1)}')
+        return get_viewer_layout(f'/{DEFAULT_DR}/view/{match.group(1)}')
     if re.search(r'^/+dr\d/+view/+(\d+)', pathname):
         return get_viewer_layout(pathname)
     if search_match := re.search(r"""^
@@ -227,6 +231,8 @@ def app_select_by_url(pathname):
         return get_login_layout(pathname)
     if re.search('^/+anomalies/*$', pathname):
         return get_anomalies_layout(pathname)
+    if re.search('^/+tags/*$', pathname):
+        return get_tags_layout(pathname)
     return html.H1('404')
 
 
