@@ -82,7 +82,7 @@ def get_layout(pathname):
             value=['short'] if is_short else [],
         ),
         html.H2(id='title'),
-        html.Div(id='akb-info'),
+        html.Div(set_akb_info(0, oid), id='akb-info'),
         html.Div(
             [
                 dcc.Graph(
@@ -355,11 +355,7 @@ def set_title(oid):
     return f'{oid}'
 
 
-@app.callback(
-    Output('akb-info', 'children'),
-    [Input('oid', 'children')],
-)
-def set_akb_info(oid):
+def set_akb_info(_, oid):
     if not is_user_token_valid(flask.request.cookies.get('login_token')):
         return None
     available_tags = akb.get_tag_names()
@@ -393,7 +389,20 @@ def set_akb_info(oid):
         ),
         ' ',
         html.Div('', id='akb-submitted', style={'display': 'inline-block'}),
+        html.Br(),
+        html.Button(
+            'Reset',
+            id='akb-reset',
+            n_clicks=0,
+        ),
     ]
+
+
+app.callback(
+    Output('akb-info', 'children'),
+    [Input('akb-reset', 'n_clicks')],
+    state=[State('oid', 'children')],
+)(set_akb_info)
 
 
 @app.callback(
