@@ -123,3 +123,7 @@ class NotFound(RuntimeError):
 
 class CatalogUnavailable(RuntimeError):
     pass
+
+
+class UnAuthorized(ValueError):
+    pass
