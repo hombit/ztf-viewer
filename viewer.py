@@ -20,7 +20,7 @@ from app import app
 from cross import get_catalog_query, find_vizier, find_ztf_oid, find_ztf_circle, vizier_catalog_details, light_curve_features
 from data import get_plot_data
 from products import DateWithFrac, correct_date
-from util import html_from_astropy_table, to_str, INF, min_max_mjd_short, FILTER_COLORS, NotFound, CatalogUnavailable, joiner
+from util import html_from_astropy_table, to_str, INF, min_max_mjd_short, FILTER_COLORS, NotFound, CatalogUnavailable, join
 
 LIGHT_CURVE_TABLE_COLUMNS = ('mjd', 'mag', 'magerr', 'clrcoeff')
 
@@ -370,19 +370,28 @@ def set_akb_info(_, oid):
     def checklist_index(tag):
         return tag['priority'] // 10
 
-    checklist_tag_names = {}
+    checklist_tags = {}
     for tag in available_tags:
-        tag_names = checklist_tag_names.setdefault(checklist_index(tag), [])
-        tag_names.append(tag['name'])
+        tags = checklist_tags.setdefault(checklist_index(tag), [])
+        tags.append(tag)
 
     checklists = [
-        dcc.Checklist(
-            id=dict(type='akb-tags', index=index),
-            options=[{'label': name, 'value': name} for name in tag_names],
-            value=list(tags_enabled.intersection(tag_names)),
-            labelStyle={'display': 'inline-block'}
+        html.Div(
+            [
+                html.Div(
+                    dcc.Checklist(
+                        id=dict(type='akb-tags', index=f'{row}-{column}'),
+                        options=[{'label': tag['name'], 'value': tag['name']}],
+                        value=[tag['name']] if tag['name'] in tags_enabled else [],
+                        labelStyle={'display': 'inline-block'},
+                    ),
+                    title=tag['description'],
+                    style={'display': 'inline-block'},
+                )
+                for column, tag in enumerate(tags)
+            ],
         )
-        for index, tag_names in checklist_tag_names.items()
+        for row, tags in checklist_tags.items()
     ]
 
     children = checklists + [
